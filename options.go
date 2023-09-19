@@ -62,7 +62,7 @@ func (o *Option[T]) IsNone() bool {
 
 // Unwrap returns the value of the option.
 // If the option is None, Unwrap panics.
-// You should check the option with IsPresent() before calling this method.
+// You should check the option with [Option.IsPresent] before calling this method.
 func (o *Option[T]) Unwrap() T {
 	if o.present {
 		return o.value
@@ -136,12 +136,12 @@ func (o Option[T]) GoString() string {
 	}
 }
 
-// MarshalJSON implements the json.Marshaler interface.
+// MarshalJSON implements the [json.Marshaler] interface.
 func (o Option[T]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(o.Pointer())
 }
 
-// UnmarshalJSON implements the json.Unmarshaler interface.
+// UnmarshalJSON implements the [json.Unmarshaler] interface.
 func (o *Option[T]) UnmarshalJSON(bytes []byte) error {
 	var p *T
 	if err := json.Unmarshal(bytes, &p); err != nil {
@@ -151,7 +151,7 @@ func (o *Option[T]) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-// Value implements the SQL driver.Valuer interface.
+// Value implements the SQL [driver.Valuer] interface.
 // See http://jmoiron.net/blog/built-in-interfaces
 func (o Option[T]) Value() (driver.Value, error) {
 	if o.present {
@@ -161,7 +161,7 @@ func (o Option[T]) Value() (driver.Value, error) {
 	}
 }
 
-// Scan implements the SQL driver.Scanner interface.
+// Scan implements the SQL [driver.Scanner] interface.
 // See http://jmoiron.net/blog/built-in-interfaces
 func (o *Option[T]) Scan(src any) error {
 	if src == nil {
@@ -182,7 +182,9 @@ func (o *Option[T]) Scan(src any) error {
 
 // Equal returns true if the two options are equal.
 // Usually you don't need to call this method since you can use == operator.
-// This method is provided to make Option[T] comparable by go-cmp.
+// This method is provided to make Option[T] comparable by [go-cmp].
+//
+// [go-cmp]: https://github.com/google/go-cmp
 func (o Option[T]) Equal(other Option[T]) bool {
 	if o.present != other.present {
 		return false
