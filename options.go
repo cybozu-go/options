@@ -8,6 +8,8 @@ import (
 )
 
 // Option[T] represents an optional value of type T.
+//
+// Options that have no value are called [None].
 // The zero value of Option[T] is None.
 type Option[T any] struct {
 	// invariant: !present => value == <zero value of T>
