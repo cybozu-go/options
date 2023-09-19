@@ -18,3 +18,11 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Test
         run: go test ./...
+      - name: Check format
+        run: |
+          WRONG=$(go fmt)
+          if [ -n "$WRONG" ]; then
+            echo "Not formatted:"
+            echo "$WRONG"
+            exit 1
+          fi
