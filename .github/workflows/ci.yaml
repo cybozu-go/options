@@ -17,7 +17,9 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Test
-        run: go test ./...
+        run: |
+          go test ./...
+          ( cd interop && go test ./... )
       - name: Check format
         run: |
           WRONG=$(go fmt)
