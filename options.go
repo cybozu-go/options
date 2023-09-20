@@ -183,6 +183,8 @@ func (o *Option[T]) Scan(src any) error {
 }
 
 // Equal returns true if the two options are equal.
+// Equality of the wrapped values is determined by [reflect.DeepEqual].
+//
 // Usually you don't need to call this method since you can use == operator.
 // This method is provided to make Option[T] comparable by [go-cmp].
 //
@@ -195,4 +197,14 @@ func (o Option[T]) Equal(other Option[T]) bool {
 		return true
 	}
 	return reflect.DeepEqual(o.value, other.value)
+}
+
+// Pointer is a free function version of [Option.Pointer].
+//
+// This function is provided to write Transfermer of [go-cmp].
+// See README for details.
+//
+// [go-cmp]: https://github.com/google/go-cmp
+func Pointer[T any](o Option[T]) *T {
+	return o.Pointer()
 }
