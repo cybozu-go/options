@@ -11,10 +11,10 @@ fmt.Println(opt) // prints "42"
 fmt.Printf("%#v\n", opt) // prints "options.New(42)"
 
 if opt.IsPresent() {
-    // opt.Unwrap panics when opt is None.
-    // When there are feasible default values, you can use UnwrapOr or UnwrapOrZero, which do not panic.
-    v := opt.Unwrap()
-    DoSomething(v)
+	// opt.Unwrap panics when opt is None.
+	// When there are feasible default values, you can use UnwrapOr or UnwrapOrZero, which do not panic.
+	v := opt.Unwrap()
+	DoSomething(v)
 }
 ```
 
@@ -47,7 +47,7 @@ type TestData struct {
 }
 
 func TestGoCmp(t *testing.T) {
-    // Use *T instead of Option[T] in the cmp.Diff.
+	// Use *T instead of Option[T] in the cmp.Diff.
 	cmpopt := cmp.Transformer("options.Option", options.Pointer[*TestData])
 
 	d1 := options.New(&TestData{
