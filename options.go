@@ -194,7 +194,5 @@ func (o Option[T]) Equal(other Option[T]) bool {
 	if !o.present {
 		return true
 	}
-	value1 := reflect.ValueOf(o.value)
-	value2 := reflect.ValueOf(other.value)
-	return value1.Equal(value2)
+	return reflect.DeepEqual(o.value, other.value)
 }
