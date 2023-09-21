@@ -1,6 +1,8 @@
 package interop_test
 
 import (
+	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -52,6 +54,59 @@ func TestGoCmp(t *testing.T) {
 	shouldEqual(row2, row2)
 	shouldNotEqual(row1, row2)
 	shouldNotEqual(row2, row1)
+}
+
+var (
+	reNonprintable = regexp.MustCompile(`[^[:print:]]+`)
+	reSpaces       = regexp.MustCompile(`[[:space:]]+`)
+)
+
+func equalsIgnoringSpaces(a, b string) bool {
+	a = reNonprintable.ReplaceAllString(a, "")
+	a = reSpaces.ReplaceAllString(a, "")
+	a = strings.TrimSpace(a)
+	b = reNonprintable.ReplaceAllString(b, "")
+	b = reSpaces.ReplaceAllString(b, "")
+	b = strings.TrimSpace(b)
+	return a == b
+}
+
+type NestedData struct {
+	Value string
+}
+
+type TestData struct {
+	Value  string
+	Nested *NestedData
+}
+
+func TestGoCmp_Transformer(t *testing.T) {
+	cmpopt := cmp.Transformer("options.Option", options.Pointer[*TestData])
+
+	d1 := options.New(&TestData{
+		Value: "test",
+		Nested: &NestedData{
+			Value: "test",
+		},
+	})
+	d2 := options.New(&TestData{
+		Value: "test",
+		Nested: &NestedData{
+			Value: "test2",
+		},
+	})
+
+	expectedDiff := `
+		options.Option[*github.com/cybozu-go/options/interop_test.TestData](Inverse(options.Option, &&interop_test.TestData{
+			Value:  "test",
+	  - 	Nested: &interop_test.NestedData{Value: "test"},
+	  + 	Nested: &interop_test.NestedData{Value: "test2"},
+		}))
+	`
+	actualDiff := cmp.Diff(d1, d2, cmpopt)
+	if !equalsIgnoringSpaces(actualDiff, expectedDiff) {
+		t.Errorf("unexpected diff.\n[expected]\n%s\n\n[actual]\n%s", expectedDiff, actualDiff)
+	}
 }
 
 func TestSQL(t *testing.T) {
