@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 
@@ -108,31 +107,6 @@ func ExampleMap() {
 	// Output:
 	// some: options.New(5)
 	// none: options.None[int]()
-}
-
-func ExampleFlatMap() {
-	findComma := func(s string) options.Option[int] {
-		idx := strings.IndexRune(s, ',')
-		if idx == -1 {
-			return options.None[int]()
-		} else {
-			return options.New(idx)
-		}
-	}
-
-	s1 := options.New("Hello, world!")
-	fmt.Printf("s1: %#v\n", options.FlatMap(s1, findComma))
-
-	s2 := options.New("Hello world!")
-	fmt.Printf("s2: %#v\n", options.FlatMap(s2, findComma))
-
-	s3 := options.None[string]()
-	fmt.Printf("s3: %#v\n", options.FlatMap(s3, findComma))
-
-	// Output:
-	// s1: options.New(5)
-	// s2: options.None[int]()
-	// s3: options.None[int]()
 }
 
 func ExampleOption_String() {

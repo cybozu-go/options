@@ -109,16 +109,6 @@ func Map[A any, B any](o Option[A], f func(A) B) Option[B] {
 	}
 }
 
-// FlatMap returns a new option by applying the given function to the value of the option.
-// If the option is None, None is returned.
-func FlatMap[A any, B any](o Option[A], f func(A) Option[B]) Option[B] {
-	if o.present {
-		return f(o.value)
-	} else {
-		return None[B]()
-	}
-}
-
 // String returns the string representation of the wrapped value.
 // If the option is None, an empty string is returned.
 func (o Option[T]) String() string {
