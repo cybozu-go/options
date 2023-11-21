@@ -232,6 +232,25 @@ func TestSQLScan(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertEqual(t, opt3, options.New[time.Time](ts))
+
+	byteString := []byte("hello")
+	var opt4 options.Option[string]
+	if err := opt4.Scan(byteString); err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, opt4, options.New[string]("hello"))
+
+	var opt5 options.Option[[]byte]
+	if err := opt5.Scan("hello"); err != nil {
+		t.Fatal(err)
+	}
+	assertDeepEqual(t, opt5, options.New[[]byte]([]byte("hello")))
+
+	var opt6 options.Option[string]
+	if err := opt6.Scan(nil); err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, opt6, options.None[string]())
 }
 
 func TestEqual(t *testing.T) {

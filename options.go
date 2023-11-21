@@ -164,12 +164,36 @@ func (o *Option[T]) Scan(src any) error {
 	if err != nil {
 		return fmt.Errorf("Option[%T].Scan: failed to convert value from SQL driver: %w", o.value, err)
 	}
-	v, ok := av.(T)
-	if !ok {
-		return fmt.Errorf("Option[%T].Scan: failed to convert value %#v to type %T", o.value, av, o.value)
+	return convertType(av, o)
+}
+
+func convertType[T any](src any, dst *Option[T]) error {
+	// First, try to directly convert the value to T
+	v, ok := src.(T)
+	if ok {
+		*dst = New(v)
+		return nil
 	}
-	*o = New(v)
-	return nil
+
+	// Convert between string and []byte
+	dstType := reflect.TypeOf(dst.value)
+	srcType := reflect.TypeOf(src)
+	if isByteSlice(srcType) && dstType.Kind() == reflect.String {
+		src = string(src.([]byte))
+		*dst = New(src.(T))
+		return nil
+	}
+	if srcType.Kind() == reflect.String && isByteSlice(dstType) {
+		src = []byte(src.(string))
+		*dst = New(src.(T))
+		return nil
+	}
+
+	return fmt.Errorf("Option[%T].Scan: failed to convert value %#v to type %T", dst.value, src, dst.value)
+}
+
+func isByteSlice(t reflect.Type) bool {
+	return t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8
 }
 
 // Equal returns true if the two options are equal.
