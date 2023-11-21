@@ -166,7 +166,7 @@ func (o *Option[T]) Scan(src any) error {
 	}
 	v, ok := av.(T)
 	if !ok {
-		return fmt.Errorf("Option[%T].Scan: failed to convert value '%#v' to type %T", o.value, v, o.value)
+		return fmt.Errorf("Option[%T].Scan: failed to convert value %#v to type %T", o.value, av, o.value)
 	}
 	*o = New(v)
 	return nil
