@@ -160,14 +160,12 @@ func (o *Option[T]) Scan(src any) error {
 		*o = None[T]()
 		return nil
 	}
-	av, err := driver.DefaultParameterConverter.ConvertValue(src)
-	if err != nil {
-		return fmt.Errorf("Option[%T].Scan: failed to convert value from SQL driver: %w", o.value, err)
+
+	var v T
+	if err := convertAssign(&v, src); err != nil {
+		return fmt.Errorf("Option[%T].Scan: %w", o.value, err)
 	}
-	v, ok := av.(T)
-	if !ok {
-		return fmt.Errorf("Option[%T].Scan: failed to convert value '%#v' to type %T", o.value, v, o.value)
-	}
+
 	*o = New(v)
 	return nil
 }
