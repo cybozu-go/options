@@ -160,40 +160,14 @@ func (o *Option[T]) Scan(src any) error {
 		*o = None[T]()
 		return nil
 	}
-	av, err := driver.DefaultParameterConverter.ConvertValue(src)
-	if err != nil {
-		return fmt.Errorf("Option[%T].Scan: failed to convert value from SQL driver: %w", o.value, err)
-	}
-	return convertType(av, o)
-}
 
-func convertType[T any](src any, dst *Option[T]) error {
-	// First, try to directly convert the value to T
-	v, ok := src.(T)
-	if ok {
-		*dst = New(v)
-		return nil
+	var v T
+	if err := convertAssign(&v, src); err != nil {
+		return fmt.Errorf("Option[%T].Scan: %w", o.value, err)
 	}
 
-	// Convert between string and []byte
-	dstType := reflect.TypeOf(dst.value)
-	srcType := reflect.TypeOf(src)
-	if isByteSlice(srcType) && dstType.Kind() == reflect.String {
-		src = string(src.([]byte))
-		*dst = New(src.(T))
-		return nil
-	}
-	if srcType.Kind() == reflect.String && isByteSlice(dstType) {
-		src = []byte(src.(string))
-		*dst = New(src.(T))
-		return nil
-	}
-
-	return fmt.Errorf("Option[%T].Scan: failed to convert value %#v to type %T", dst.value, src, dst.value)
-}
-
-func isByteSlice(t reflect.Type) bool {
-	return t.Kind() == reflect.Slice && t.Elem().Kind() == reflect.Uint8
+	*o = New(v)
+	return nil
 }
 
 // Equal returns true if the two options are equal.
