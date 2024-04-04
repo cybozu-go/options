@@ -52,11 +52,11 @@ func toSQLValue[T any](t *testing.T, opt options.Option[T]) driver.Value {
 	return value
 }
 
-func ExampleFromTuple() {
-	some := options.FromTuple(42, true)
+func ExamplePack() {
+	some := options.Pack(42, true)
 	fmt.Println(some.GoString())
 
-	none := options.FromTuple[int](0, false)
+	none := options.Pack[int](0, false)
 	fmt.Println(none.GoString())
 
 	// Output:
@@ -93,6 +93,21 @@ func ExampleOption_UnwrapOrZero() {
 	// Output:
 	// 42
 	// 0
+}
+
+func ExampleOption_Unpack() {
+	some := options.New("hello")
+	if s, ok := some.Unpack(); ok {
+		fmt.Println(s)
+	}
+
+	none := options.None[string]()
+	if s, ok := none.Unpack(); ok {
+		fmt.Println(s)
+	}
+
+	// Output:
+	// hello
 }
 
 func ExampleMap() {

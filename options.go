@@ -41,15 +41,21 @@ func FromPointer[T any](ptr *T) Option[T] {
 	}
 }
 
-// FromTuple creates Option[T] from a tuple of (T, bool).
+// Pack creates Option[T] from (T, bool).
 // If the bool is true, a new Option[T] with the given value is returned.
 // Otherwise, None is returned.
-func FromTuple[T any](value T, present bool) Option[T] {
+func Pack[T any](value T, present bool) Option[T] {
 	if present {
 		return New(value)
 	} else {
 		return None[T]()
 	}
+}
+
+// FromTuple is an alias of [Pack].
+// Newer code should use [Pack] instead of this function.
+func FromTuple[T any](value T, present bool) Option[T] {
+	return Pack(value, present)
 }
 
 // IsPresent returns true if the option has a value.
@@ -97,6 +103,13 @@ func (o *Option[T]) Pointer() *T {
 	} else {
 		return nil
 	}
+}
+
+// Unpack returns (value, present).
+// If the option is None, value is always zero.
+// This function is useful when you want to check the presence of the value and get it at once.
+func (o *Option[T]) Unpack() (T, bool) {
+	return o.value, o.present
 }
 
 // Map returns a new option by applying the given function to the value of the option.
