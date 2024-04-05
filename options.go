@@ -53,7 +53,8 @@ func Pack[T any](value T, present bool) Option[T] {
 }
 
 // FromTuple is an alias of [Pack].
-// Newer code should use [Pack] instead of this function.
+//
+// Deprecated: newer code should use [Pack] instead of this function.
 func FromTuple[T any](value T, present bool) Option[T] {
 	return Pack(value, present)
 }
