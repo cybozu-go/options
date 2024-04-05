@@ -16,6 +16,11 @@ if opt.IsPresent() {
 	v := opt.Unwrap()
 	DoSomething(v)
 }
+
+// You can also use Unpack to check presence and get the value at once.
+if v, ok := opt.Unpack(); ok {
+	DoSomething(v)
+}
 ```
 
 ## Interoperability
