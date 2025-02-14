@@ -1,5 +1,7 @@
 # options
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/cybozu-go/options.svg)](https://pkg.go.dev/github.com/cybozu-go/options)
+
 `cybozu-go/options` provides `Option[T]`, which represents an optional value of type `T`.
 
 ## Example
