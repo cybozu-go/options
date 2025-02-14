@@ -1,6 +1,7 @@
 package options
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
@@ -170,17 +171,12 @@ func (o Option[T]) Value() (driver.Value, error) {
 // Scan implements the SQL [driver.Scanner] interface.
 // See http://jmoiron.net/blog/built-in-interfaces
 func (o *Option[T]) Scan(src any) error {
-	if src == nil {
-		*o = None[T]()
-		return nil
-	}
-
-	var v T
-	if err := convertAssign(&v, src); err != nil {
+	var v sql.Null[T]
+	if err := v.Scan(src); err != nil {
 		return fmt.Errorf("Option[%T].Scan: %w", o.value, err)
 	}
 
-	*o = New(v)
+	*o = Pack(v.V, v.Valid)
 	return nil
 }
 
