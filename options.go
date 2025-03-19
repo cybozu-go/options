@@ -162,6 +162,9 @@ func (o *Option[T]) UnmarshalJSON(bytes []byte) error {
 // See http://jmoiron.net/blog/built-in-interfaces
 func (o Option[T]) Value() (driver.Value, error) {
 	if o.present {
+		if valuer, ok := any(&o.value).(driver.Valuer); ok {
+			return valuer.Value()
+		}
 		return o.value, nil
 	} else {
 		return nil, nil

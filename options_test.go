@@ -202,6 +202,21 @@ func TestJSONUnmarshal(t *testing.T) {
 	assertDeepEqual(t, *opt6, options.New(map[string]int{"foo": 1, "bar": 2}))
 }
 
+type wrappedString string
+
+func (ws *wrappedString) Scan(src any) error {
+	s, ok := src.(string)
+	if !ok {
+		return fmt.Errorf("wrappedString.Scan: unexpected type %T", src)
+	}
+	*ws = wrappedString(s)
+	return nil
+}
+
+func (ws wrappedString) Value() (driver.Value, error) {
+	return string(ws), nil
+}
+
 func TestSQLValue(t *testing.T) {
 	opt1 := options.New(3.14)
 	value1 := toSQLValue(t, opt1)
@@ -223,6 +238,10 @@ func TestSQLValue(t *testing.T) {
 	opt5 := options.None[time.Time]()
 	value5 := toSQLValue(t, opt5)
 	assertEqual[any](t, value5, nil)
+
+	opt6 := options.New[wrappedString]("hello")
+	value6 := toSQLValue(t, opt6)
+	assertEqual[any](t, value6, "hello")
 }
 
 func TestSQLScan(t *testing.T) {
@@ -266,6 +285,12 @@ func TestSQLScan(t *testing.T) {
 		t.Fatal(err)
 	}
 	assertEqual(t, opt6, options.None[string]())
+
+	var opt7 options.Option[wrappedString]
+	if err := opt7.Scan("hello"); err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, opt7, options.New[wrappedString]("hello"))
 }
 
 func TestEqual(t *testing.T) {
